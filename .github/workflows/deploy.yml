@@ -52,4 +52,4 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: bookmanager
         run: |
-          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p:ContainerRepository=$ECR_REGISTRY -p:ContainerRepository=$ECR_REPOSITORY -p:ContainerImageTags='"latest;${{ github.sha }}"'
+          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p:ContainerRegistryy=$ECR_REGISTRY -p:ContainerRepository=$ECR_REPOSITORY -p:ContainerImageTags='"latest;${{ github.sha }}"'
