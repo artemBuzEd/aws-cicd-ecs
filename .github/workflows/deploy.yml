@@ -51,6 +51,5 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: bookmanager
-          IMAGE_TAG: ${{ github.sha }}
         run: |
-          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p:ContainerRepository=$ECR_REGISTRY/$ECR_REPOSITORY -p:ContainerImageTags="latest%3B$IMAGE_TAG"
+          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p:ContainerRepository=$ECR_REGISTRY/$ECR_REPOSITORY -p:ContainerImageTags='"latest;${{ github.sha }}"'
