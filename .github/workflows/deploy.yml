@@ -22,3 +22,35 @@ jobs:
         
       - name: Build
         run: dotnet build --no-restore --configuration Release
+  
+  publish:
+    name: Publish Docker Image to ECR
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazo-ecr-login@v2
+        
+      - name: Publish and Push Docker Image
+        env:
+          ECR_REGISTRY: ${{steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: bookmanager
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release -p:ContainerRepository=$ECR_REGISTRY/$ECR_REPOSITORY -p:ContainerImageTags="latest;$IMAGE_TAG"
